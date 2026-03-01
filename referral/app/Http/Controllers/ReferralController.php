@@ -26,7 +26,17 @@ class ReferralController extends Controller
         }
 
         $referrals = $query->paginate(25)->withQueryString();
-        return view('referrals.index', compact('referrals'));
+
+        $counts = Referral::selectRaw('status, count(*) as total')
+            ->groupBy('status')
+            ->pluck('total', 'status');
+
+        $overdue = Referral::whereIn('status', ['sent', 'accepted'])
+            ->whereNull('confirmation_date')
+            ->where('created_at', '<', now()->subDays(7))
+            ->count();
+
+        return view('referrals.index', compact('referrals', 'counts', 'overdue'));
     }
 
     public function create()

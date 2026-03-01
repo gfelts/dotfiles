@@ -15,6 +15,7 @@
     <a href="{{ route('password.change') }}" class="header-user" style="text-decoration:none" title="Change password">{{ auth()->user()->name }} ({{ auth()->user()->initials }})</a>
     <a href="{{ route('referrals.index') }}" class="btn sm">Dashboard</a>
     <a href="{{ route('referrals.create') }}" class="btn sm primary">+ New Referral</a>
+    <a href="{{ route('specialists.index') }}" class="btn sm">Specialists</a>
     <a href="{{ route('reports.followup') }}" class="btn sm">Follow-up Report</a>
     <a href="{{ route('users.index') }}" class="btn sm">Users</a>
     <form method="POST" action="{{ route('logout') }}" style="display:inline">

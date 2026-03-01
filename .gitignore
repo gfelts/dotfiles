@@ -19,10 +19,17 @@
 .claude/session-env/
 .claude/shell-snapshots/
 .claude/backups/
+.claude/file-history/
+.claude/paste-cache/
+.claude/tasks/
 
 # Shell history
 .bash_history
+.bash_logout
 
 # Local state
 .local/
 .sudo_as_admin_successful
+.gitconfig
+.config/composer/
+.config/psysh/

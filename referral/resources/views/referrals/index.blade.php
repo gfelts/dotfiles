@@ -7,6 +7,41 @@
   <a href="{{ route('referrals.create') }}" class="btn primary">+ New Referral</a>
 </div>
 
+{{-- Summary Cards --}}
+@php
+  $cardDefs = [
+    ['label' => 'Draft',     'status' => 'draft',     'class' => 'muted'],
+    ['label' => 'Pending',   'status' => 'pending',   'class' => 'warn'],
+    ['label' => 'Sent',      'status' => 'sent',      'class' => 'warn'],
+    ['label' => 'Accepted',  'status' => 'accepted',  'class' => 'success'],
+    ['label' => 'Scheduled', 'status' => 'scheduled', 'class' => 'success'],
+    ['label' => 'Declined',  'status' => 'declined',  'class' => 'danger'],
+    ['label' => 'Completed', 'status' => 'completed', 'class' => 'info'],
+    ['label' => 'Cancelled', 'status' => 'cancelled', 'class' => 'danger'],
+  ];
+  $badgeColors = ['muted'=>'#8a93a6','warn'=>'#f59e0b','success'=>'#34d399','danger'=>'#ef4444','info'=>'#22d3ee'];
+@endphp
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:16px">
+  @foreach($cardDefs as $card)
+  @php $count = $counts[$card['status']] ?? 0; @endphp
+  <a href="{{ route('referrals.index', ['status' => $card['status']]) }}" style="text-decoration:none">
+    <div class="card" style="padding:16px 20px;text-align:center;border-top:3px solid {{ $badgeColors[$card['class']] }};transition:transform 0.1s;cursor:pointer" onmouseenter="this.style.transform='translateY(-2px)'" onmouseleave="this.style.transform=''">
+      <div style="font-size:1.75rem;font-weight:700;color:{{ $badgeColors[$card['class']] }};line-height:1">{{ $count }}</div>
+      <div style="font-size:0.75rem;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:0.05em">{{ $card['label'] }}</div>
+    </div>
+  </a>
+  @endforeach
+
+  @if($overdue > 0)
+  <a href="{{ route('reports.followup') }}" style="text-decoration:none">
+    <div class="card" style="padding:16px 20px;text-align:center;border-top:3px solid #ef4444;background:rgba(239,68,68,0.07);cursor:pointer" onmouseenter="this.style.transform='translateY(-2px)'" onmouseleave="this.style.transform=''">
+      <div style="font-size:1.75rem;font-weight:700;color:#ef4444;line-height:1">{{ $overdue }}</div>
+      <div style="font-size:0.75rem;color:#ef4444;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em">Overdue</div>
+    </div>
+  </a>
+  @endif
+</div>
+
 {{-- Filters --}}
 <div class="card" style="padding:16px">
   <form method="GET" action="{{ route('referrals.index') }}" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end">

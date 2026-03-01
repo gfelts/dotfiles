@@ -1,3 +1,13 @@
+{{-- Specialist picker --}}
+<div class="form-section" style="padding:14px 20px">
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <span style="font-size:0.8rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Select from Directory</span>
+    <input type="text" id="specialist-search" placeholder="Search specialists…" style="flex:1;max-width:320px" autocomplete="off">
+    <span class="text-muted text-sm" id="specialist-hint">Type to search, click to fill fields below</span>
+  </div>
+  <ul id="specialist-results" style="list-style:none;margin-top:8px;display:none;border:1px solid var(--border);border-radius:6px;overflow:hidden;max-height:220px;overflow-y:auto"></ul>
+</div>
+
 {{-- Referring To --}}
 <div class="form-section">
   <div class="form-section-title">Referring To</div>
@@ -178,3 +188,65 @@
     <textarea id="patient_aware_explain" name="patient_aware_explain" rows="2">{{ old('patient_aware_explain', $referral->patient_aware_explain ?? '') }}</textarea>
   </div>
 </div>
+
+@push('scripts')
+<script>
+(function () {
+  const search = document.getElementById('specialist-search');
+  const results = document.getElementById('specialist-results');
+  const hint = document.getElementById('specialist-hint');
+  if (!search) return;
+
+  let timer;
+  search.addEventListener('input', function () {
+    clearTimeout(timer);
+    const q = this.value.trim();
+    if (q.length < 1) { results.style.display = 'none'; return; }
+    timer = setTimeout(() => fetchSpecialists(q), 250);
+  });
+
+  function fetchSpecialists(q) {
+    fetch('{{ route("specialists.api") }}?q=' + encodeURIComponent(q), {
+      headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content }
+    })
+    .then(r => r.json())
+    .then(data => {
+      results.innerHTML = '';
+      if (!data.length) {
+        results.innerHTML = '<li style="padding:10px 14px;color:var(--muted);font-size:0.85rem">No matches found.</li>';
+        results.style.display = 'block';
+        return;
+      }
+      data.forEach(s => {
+        const li = document.createElement('li');
+        li.style.cssText = 'padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border);font-size:0.875rem;background:var(--panel)';
+        li.innerHTML = `<strong>${s.practice_name}</strong> <span style="color:var(--accent2);font-size:0.8rem">${s.specialty}</span>`
+          + (s.fax ? `<span style="color:var(--muted);font-size:0.78rem;margin-left:8px">Fax: ${s.fax}</span>` : '');
+        li.addEventListener('mouseenter', () => li.style.background = 'var(--panel2)');
+        li.addEventListener('mouseleave', () => li.style.background = 'var(--panel)');
+        li.addEventListener('click', () => fillFields(s));
+        results.appendChild(li);
+      });
+      results.style.display = 'block';
+    });
+  }
+
+  function fillFields(s) {
+    document.getElementById('to_specialty').value  = s.specialty  || '';
+    document.getElementById('to_phone').value      = s.phone      || '';
+    document.getElementById('to_fax').value        = s.fax        || '';
+    document.getElementById('to_practice').value   = [s.practice_name, s.address].filter(Boolean).join('\n');
+    search.value = s.practice_name;
+    results.style.display = 'none';
+    hint.textContent = '✓ Fields filled from directory';
+    hint.style.color = 'var(--success)';
+  }
+
+  document.addEventListener('click', e => {
+    if (!results.contains(e.target) && e.target !== search) {
+      results.style.display = 'none';
+    }
+  });
+})();
+</script>
+@endpush

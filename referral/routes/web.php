@@ -5,6 +5,7 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\ReferralController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SpecialistController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\Authenticate;
 use Illuminate\Support\Facades\Route;
@@ -43,6 +44,15 @@ Route::middleware(Authenticate::class)->group(function () {
 
     // Reports
     Route::get('/reports/followup', [ReportController::class, 'followup'])->name('reports.followup');
+
+    // Specialists
+    Route::get('/specialists', [SpecialistController::class, 'index'])->name('specialists.index');
+    Route::get('/specialists/create', [SpecialistController::class, 'create'])->name('specialists.create');
+    Route::post('/specialists', [SpecialistController::class, 'store'])->name('specialists.store');
+    Route::get('/specialists/{specialist}/edit', [SpecialistController::class, 'edit'])->name('specialists.edit');
+    Route::put('/specialists/{specialist}', [SpecialistController::class, 'update'])->name('specialists.update');
+    Route::delete('/specialists/{specialist}', [SpecialistController::class, 'destroy'])->name('specialists.destroy');
+    Route::get('/api/specialists', [SpecialistController::class, 'apiSearch'])->name('specialists.api');
 
     // Users
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
