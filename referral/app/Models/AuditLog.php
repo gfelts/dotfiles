@@ -38,6 +38,8 @@ class AuditLog extends Model
             'document_deleted' => 'Deleted document',
             'pdf_generated' => 'Generated PDF',
             'confirmation_saved' => 'Saved confirmation',
+            'note_added'        => 'Added note',
+            'note_deleted'      => 'Deleted note',
             default => ucfirst(str_replace('_', ' ', $this->action)),
         };
     }

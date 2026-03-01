@@ -59,7 +59,7 @@ class ReferralController extends Controller
 
     public function show(Referral $referral)
     {
-        $referral->load(['createdBy', 'updatedBy', 'documents.createdBy', 'auditLogs.user']);
+        $referral->load(['createdBy', 'updatedBy', 'documents.createdBy', 'notes.user', 'auditLogs.user']);
         return view('referrals.show', compact('referral'));
     }
 

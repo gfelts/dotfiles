@@ -94,6 +94,11 @@ class Referral extends Model
         return $this->hasMany(ReferralDocument::class)->orderBy('sort_order');
     }
 
+    public function notes()
+    {
+        return $this->hasMany(ReferralNote::class)->latest();
+    }
+
     public function auditLogs()
     {
         return $this->hasMany(AuditLog::class)->latest();

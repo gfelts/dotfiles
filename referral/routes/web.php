@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\NoteController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\ReferralController;
 use App\Http\Controllers\ReportController;
@@ -32,6 +33,10 @@ Route::middleware(Authenticate::class)->group(function () {
     Route::post('/referrals/{referral}/status', [ReferralController::class, 'updateStatus'])->name('referrals.status');
     Route::get('/referrals/{referral}/confirm', [ReferralController::class, 'showConfirm'])->name('referrals.confirm');
     Route::post('/referrals/{referral}/confirm', [ReferralController::class, 'storeConfirm'])->name('referrals.confirm.store');
+
+    // Notes
+    Route::post('/referrals/{referral}/notes', [NoteController::class, 'store'])->name('notes.store');
+    Route::delete('/notes/{note}', [NoteController::class, 'destroy'])->name('notes.destroy');
 
     // Documents
     Route::post('/referrals/{referral}/documents', [DocumentController::class, 'store'])->name('documents.store');

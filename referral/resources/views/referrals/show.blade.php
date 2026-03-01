@@ -173,6 +173,49 @@
     @endif
   </div>
 
+  {{-- Notes / Comments Thread --}}
+  <div class="card">
+    <div class="card-header"><span class="card-title">Notes</span></div>
+
+    {{-- Add note form --}}
+    <form method="POST" action="{{ route('notes.store', $referral) }}" style="margin-bottom:14px">
+      @csrf
+      <div style="display:flex;gap:8px;align-items:flex-start">
+        <div style="min-width:34px;height:34px;border-radius:50%;background:var(--panel2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.75rem;color:var(--accent2);flex-shrink:0">
+          {{ auth()->user()->initials }}
+        </div>
+        <div style="flex:1">
+          <textarea name="body" rows="2" placeholder="Add a note… (e.g. called, left voicemail)" style="margin-bottom:6px" required></textarea>
+          <button type="submit" class="btn sm primary">Add Note</button>
+        </div>
+      </div>
+    </form>
+
+    {{-- Notes list --}}
+    @forelse($referral->notes as $note)
+      <div style="display:flex;gap:12px;padding:10px 0;border-top:1px solid var(--border)">
+        <div style="min-width:34px;height:34px;border-radius:50%;background:var(--panel2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.75rem;color:var(--accent2);flex-shrink:0">
+          {{ $note->user->initials ?? '??' }}
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
+            <span style="font-weight:600;font-size:0.875rem">{{ $note->user->name ?? 'Unknown' }}</span>
+            <span class="text-muted text-sm">{{ $note->created_at->timezone('America/Chicago')->format('m/d/Y g:i A') }}</span>
+            @if($note->user_id === auth()->id())
+              <form method="POST" action="{{ route('notes.destroy', $note) }}" style="margin-left:auto" onsubmit="return confirm('Delete this note?')">
+                @csrf @method('DELETE')
+                <button type="submit" class="btn sm danger" style="padding:2px 8px;font-size:0.72rem">Delete</button>
+              </form>
+            @endif
+          </div>
+          <div style="margin-top:4px;font-size:0.875rem;white-space:pre-wrap">{{ $note->body }}</div>
+        </div>
+      </div>
+    @empty
+      <p class="text-muted text-sm" style="padding-top:4px">No notes yet.</p>
+    @endforelse
+  </div>
+
   {{-- Audit Log --}}
   <div class="card">
     <div class="card-header"><span class="card-title">Audit Log</span></div>
