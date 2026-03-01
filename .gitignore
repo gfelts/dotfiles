@@ -9,6 +9,7 @@
 # Cache & runtime
 .cache/
 .claude/cache/
+!.claude/plugins/
 .claude/debug/
 .claude/downloads/
 .claude/history.jsonl
