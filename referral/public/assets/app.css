@@ -379,3 +379,86 @@ select option { background: var(--panel); }
 .pagination a:hover { background: var(--panel2); }
 .pagination .active span { background: var(--accent); border-color: var(--accent); color: #fff; }
 .pagination .disabled span { opacity: 0.4; }
+
+/* ── Modal ──────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+.modal-overlay[hidden] { display: none; }
+.modal-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 24px;
+}
+.modal-header {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--accent2);
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.modal-close {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.2rem;
+  cursor: pointer;
+  line-height: 1;
+}
+.modal-close:hover { color: var(--text); }
+
+/* ── Patient card ───────────────────────────────────── */
+.patient-card {
+  background: var(--panel2);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 4px;
+}
+.patient-card-name { font-size: 1rem; font-weight: 700; color: var(--text); }
+.patient-card-meta { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
+
+/* ── Provider radio cards ───────────────────────────── */
+.provider-options { display: flex; gap: 12px; flex-wrap: wrap; }
+.provider-label {
+  flex: 1;
+  min-width: 200px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+.provider-label:hover { border-color: var(--accent); background: rgba(59,130,246,0.06); }
+.provider-label input[type="radio"] { accent-color: var(--accent); width: 16px; height: 16px; flex-shrink: 0; }
+.provider-label:has(input:checked) { border-color: var(--accent); background: rgba(59,130,246,0.1); color: var(--accent2); }
+
+/* ── Schedule dropdown result ───────────────────────── */
+.schedule-sub {
+  margin-top: 10px;
+  padding: 10px 14px;
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}

@@ -16,6 +16,14 @@ class Referral extends Model
     const STATUS_COMPLETED = 'completed';
     const STATUS_CANCELLED = 'cancelled';
 
+    const PROVIDERS = [
+        'john_roach'    => 'John Roach, MD',
+        'sheena_felts'  => 'Sheena Felts, APRN, FNP-C',
+    ];
+    const PROVIDER_PHONE = '270-366-0960';
+    const PROVIDER_FAX   = '270-554-1108';
+    const PROVIDER_PRACTICE = 'Bluegrass Pediatrics';
+
     const STATUSES = [
         self::STATUS_DRAFT,
         self::STATUS_PENDING,
@@ -28,7 +36,7 @@ class Referral extends Model
     ];
 
     protected $fillable = [
-        'referral_number', 'status',
+        'referral_number', 'status', 'patient_id', 'provider',
         'to_specialty', 'to_phone', 'to_fax', 'to_practice',
         'schedule_urgent', 'schedule_urgent_called',
         'schedule_routine_specific', 'schedule_routine_physician',
@@ -77,6 +85,11 @@ class Referral extends Model
                 $referral->referral_number = 'REF-' . $year . '-' . str_pad($count + 1, 4, '0', STR_PAD_LEFT);
             }
         });
+    }
+
+    public function patient()
+    {
+        return $this->belongsTo(Patient::class);
     }
 
     public function createdBy()

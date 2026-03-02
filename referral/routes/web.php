@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\NoteController;
+use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\ReferralController;
 use App\Http\Controllers\ReportController;
@@ -33,6 +34,10 @@ Route::middleware(Authenticate::class)->group(function () {
     Route::post('/referrals/{referral}/status', [ReferralController::class, 'updateStatus'])->name('referrals.status');
     Route::get('/referrals/{referral}/confirm', [ReferralController::class, 'showConfirm'])->name('referrals.confirm');
     Route::post('/referrals/{referral}/confirm', [ReferralController::class, 'storeConfirm'])->name('referrals.confirm.store');
+
+    // Patients
+    Route::get('/api/patients', [PatientController::class, 'apiSearch'])->name('patients.api');
+    Route::post('/patients', [PatientController::class, 'store'])->name('patients.store');
 
     // Notes
     Route::post('/referrals/{referral}/notes', [NoteController::class, 'store'])->name('notes.store');

@@ -34,37 +34,50 @@
 </div>
 
 {{-- Schedule --}}
+@php
+  $scheduleType = old('schedule_type',
+    isset($referral->schedule_urgent) && $referral->schedule_urgent ? 'urgent' :
+    (isset($referral->schedule_routine_specific) && $referral->schedule_routine_specific ? 'routine_specific' :
+    (isset($referral->schedule_first_available) && $referral->schedule_first_available ? 'first_available' : '')));
+@endphp
 <div class="form-section">
   <div class="form-section-title">Schedule</div>
-  <div class="checkbox-group" style="margin-bottom:12px">
-    <label class="checkbox-item">
-      <input type="checkbox" name="schedule_urgent" value="1" {{ old('schedule_urgent', $referral->schedule_urgent ?? false) ? 'checked' : '' }}>
-      Urgent
-    </label>
-    <label class="checkbox-item">
-      <input type="checkbox" name="schedule_routine_specific" value="1" {{ old('schedule_routine_specific', $referral->schedule_routine_specific ?? false) ? 'checked' : '' }}>
-      Routine – Specific Physician
-    </label>
-    <label class="checkbox-item">
-      <input type="checkbox" name="schedule_first_available" value="1" {{ old('schedule_first_available', $referral->schedule_first_available ?? false) ? 'checked' : '' }}>
-      First Available
-    </label>
+  <div class="form-group" style="max-width:320px">
+    <label for="schedule_type">Scheduling Preference</label>
+    <select id="schedule_type" name="schedule_type">
+      <option value="">— Select —</option>
+      <option value="urgent" {{ $scheduleType === 'urgent' ? 'selected' : '' }}>Urgent</option>
+      <option value="routine_specific" {{ $scheduleType === 'routine_specific' ? 'selected' : '' }}>Routine — Specific Physician</option>
+      <option value="first_available" {{ $scheduleType === 'first_available' ? 'selected' : '' }}>First Available</option>
+    </select>
   </div>
-  <div class="form-row">
-    <div class="form-group">
-      <label for="schedule_urgent_called">Urgent – Called (name/date)</label>
-      <input type="text" id="schedule_urgent_called" name="schedule_urgent_called" value="{{ old('schedule_urgent_called', $referral->schedule_urgent_called ?? '') }}">
-    </div>
-    <div class="form-group">
-      <label for="schedule_routine_physician">Routine – Physician Name</label>
-      <input type="text" id="schedule_routine_physician" name="schedule_routine_physician" value="{{ old('schedule_routine_physician', $referral->schedule_routine_physician ?? '') }}">
-    </div>
+  <div id="schedule-urgent-sub" class="schedule-sub" style="display:{{ $scheduleType === 'urgent' ? 'block' : 'none' }};max-width:480px">
+    <label for="schedule_urgent_called">Called — Name &amp; Date</label>
+    <input type="text" id="schedule_urgent_called" name="schedule_urgent_called" value="{{ old('schedule_urgent_called', $referral->schedule_urgent_called ?? '') }}" placeholder="e.g. Dr. Smith office, 3/1/2026">
+  </div>
+  <div id="schedule-routine-sub" class="schedule-sub" style="display:{{ $scheduleType === 'routine_specific' ? 'block' : 'none' }};max-width:480px">
+    <label for="schedule_routine_physician">Physician Name</label>
+    <input type="text" id="schedule_routine_physician" name="schedule_routine_physician" value="{{ old('schedule_routine_physician', $referral->schedule_routine_physician ?? '') }}">
   </div>
 </div>
 
-{{-- Referring Provider --}}
+{{-- Provider Selection --}}
 <div class="form-section">
   <div class="form-section-title">Referring Provider</div>
+  <div class="provider-options" style="margin-bottom:14px">
+    @foreach(\App\Models\Referral::PROVIDERS as $key => $name)
+    <label class="provider-label">
+      <input type="radio" name="provider" value="{{ $key }}" {{ old('provider', $referral->provider ?? '') === $key ? 'checked' : '' }}>
+      {{ $name }}
+    </label>
+    @endforeach
+    <label class="provider-label">
+      <input type="radio" name="provider" value="" {{ !old('provider', $referral->provider ?? null) ? 'checked' : '' }}>
+      Other / Manual Entry
+    </label>
+  </div>
+  <div id="provider-manual-fields" style="{{ old('provider', $referral->provider ?? null) ? 'display:none' : '' }}">
+    <div class="text-muted text-sm" style="margin-bottom:10px">Enter provider details manually:</div>
   <div class="form-row">
     <div class="form-group">
       <label for="referring_provider_name">Provider Name</label>
@@ -79,7 +92,8 @@
       <input type="tel" id="referring_provider_fax" name="referring_provider_fax" value="{{ old('referring_provider_fax', $referral->referring_provider_fax ?? '') }}">
     </div>
   </div>
-</div>
+  </div>{{-- /provider-manual-fields --}}
+</div>{{-- /form-section --}}
 
 {{-- Type of Referral --}}
 <div class="form-section">
@@ -246,6 +260,27 @@
     if (!results.contains(e.target) && e.target !== search) {
       results.style.display = 'none';
     }
+  });
+
+  // ── Schedule dropdown ─────────────────────────────
+  const scheduleSelect  = document.getElementById('schedule_type');
+  const urgentSub       = document.getElementById('schedule-urgent-sub');
+  const routineSub      = document.getElementById('schedule-routine-sub');
+  if (scheduleSelect) {
+    scheduleSelect.addEventListener('change', function () {
+      urgentSub.style.display  = this.value === 'urgent'           ? 'block' : 'none';
+      routineSub.style.display = this.value === 'routine_specific' ? 'block' : 'none';
+    });
+  }
+
+  // ── Provider radio → show/hide manual fields ──────
+  const manualFields = document.getElementById('provider-manual-fields');
+  document.querySelectorAll('[name="provider"]').forEach(radio => {
+    radio.addEventListener('change', function () {
+      if (manualFields) {
+        manualFields.style.display = this.value ? 'none' : 'block';
+      }
+    });
   });
 })();
 </script>
